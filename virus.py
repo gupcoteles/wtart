@@ -13,5 +13,4 @@ while True:
     data = ComProcess(command)
     socket.send(data)
 
-
 socket.close()

